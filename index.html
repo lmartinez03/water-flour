@@ -182,7 +182,21 @@
   .nav-link:hover::after { width: 100%; }
   /* nav-link text keeps its cream color on the aqua nav (no override needed) */
 
-  .nav-link.cta { font-weight: 700; letter-spacing: 0.24em; }
+  /* Order Online in the nav — small filled pill matching the section CTA so they
+     read as the same primary action; hover swaps fill to dark-brown */
+  .nav-link.cta {
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    background: var(--brown);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 999px;
+    opacity: 1;
+    transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease;
+  }
+  .nav-link.cta::after { display: none; }   /* skip the underline on the pill */
+  .nav-link.cta:hover { background: var(--dark-brown); transform: translateY(-1px); }
+  nav.topnav.scrolled .nav-link.cta { color: var(--cream); }  /* keep cream even on scrolled aqua nav */
 
   @media (max-width: 880px) {
     nav.topnav,
@@ -369,8 +383,9 @@
   .link .arr { font-weight: 400; font-size: 14px; }
 
   /* Per-section accent so the button pops against each section background */
-  .sec-order .link             { color: var(--ink);   border-color: var(--brown); }
-  .sec-order .link:hover       { background: var(--brown); color: var(--cream); border-color: var(--brown); }
+  /* Order Online — solid pill so it reads as the primary CTA; hover swaps to dark-brown */
+  .sec-order .link             { background: var(--brown);      color: var(--cream); border-color: var(--brown); }
+  .sec-order .link:hover       { background: var(--dark-brown); color: var(--cream); border-color: var(--dark-brown); }
   .sec-catering .link          { color: var(--cream); border-color: var(--tan); }
   .sec-catering .link:hover    { background: var(--tan); color: var(--ink); border-color: var(--tan); }
   .sec-who .link               { color: var(--cream); border-color: var(--tan); }
@@ -1548,7 +1563,7 @@
         Fresh sushi, hand-thrown pizza, slow-simmered pasta and
         bright seasonal bowls. Ready when you are.
       </p>
-      <a href="#" class="link">START AN ORDER <span class="arr">→</span></a>
+      <a href="#" class="link">ORDER ONLINE <span class="arr">→</span></a>
     </div>
   </div>
 </section>
