@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WATER + FLOUR</title>
+<link rel="icon" type="image/png" href="images/waterflourLogoT.png" />
+<link rel="apple-touch-icon" href="images/waterflourLogoT.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ------------------------------------------------------------------
+     Water + Flour — single-page site.
+
+     Structure: one HTML file, one big <style> block, one <script> at the
+     bottom. Sections live in their own <section> elements and are styled
+     in the order they appear on the page (intro overlay → nav → hero →
+     order online → catering → menus pie → menus select → socials →
+     our story → careers → location → footer).
+
+     Color palette + everything that gets reused (font stack, easing) is
+     defined as CSS custom properties on :root just below. If you need
+     to retint the whole site, change them there.
+     ------------------------------------------------------------------ */
+
+  :root {
+    /* brand colors — keep these tight; the rest of the file pulls from here */
+    --aqua:        #6797AE;
+    --aqua-deep:   #527e93;
+    --tan:         #CDCCA7;
+    --tan-light:   #DCDBBC;
+    --brown:       #B99D72;
+    --dark-brown:  #766E5C;
+    --cream:       #F4F1E6;
+    --ink:         #2A2620;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overscroll-behavior-x: none; }
+
+  body {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    text-transform: uppercase;
+  }
+  /* Lock all scroll input while the SUSHI/BOWLS/PASTA/PIZZA intro overlay is playing */
+  html.intro-locked, body.intro-locked { overflow: hidden; }
+
+  /* ============================================================
+     INTRO OVERLAY
+     ============================================================ */
+  #intro {
+    position: fixed;
+    inset: 0;
+    background: var(--aqua);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #intro.done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #intro .word-stage {
+    font-size: clamp(44px, 9vw, 132px);
+    line-height: 1;
+    height: 1.25em;
+    padding: 0.05em 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #intro .word {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    color: var(--cream);
+    font-size: inherit;
+    letter-spacing: -0.01em;
+    display: flex;
+    line-height: 1;
+  }
+  #intro .letter {
+    display: inline-block;
+    transform: translateY(120%);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  #intro .letter.in  { animation: letterIn  0.22s cubic-bezier(.22,1,.36,1) forwards; }
+  #intro .letter.out { animation: letterOut 0.18s cubic-bezier(.55,0,.7,.2) forwards; }
+  @keyframes letterIn {
+    0%   { transform: translateY(120%); opacity: 0; }
+    60%  { opacity: 1; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes letterOut {
+    0%   { transform: translateY(0);     opacity: 1; }
+    100% { transform: translateY(-120%); opacity: 0; }
+  }
+
+  /* ============================================================
+     NAV — transparent at top, soft cream once scrolled
+     ============================================================ */
+  nav.topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 28px 36px;
+    transition: background-color 0.5s ease, padding 0.5s ease, box-shadow 0.5s ease;
+  }
+  nav.topnav.scrolled {
+    background: rgba(103,151,174,0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 36px;
+    box-shadow: 0 1px 0 rgba(42,38,32,0.12);
+  }
+
+  .nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .nav-right { justify-content: flex-end; }
+
+  .brand {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transform-origin: center top;
+    will-change: transform;
+  }
+  .brand img {
+    display: block;
+    height: clamp(30px, 3.1vw, 44px);
+    width: auto;
+    transition: filter 0.5s ease;
+  }
+  /* Logo stays in its natural cream color on the aqua nav (no inversion needed) */
+
+  .nav-link {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 11.5px;
+    color: var(--cream);
+    text-decoration: none;
+    letter-spacing: 0.22em;
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.5s ease, opacity 0.3s ease;
+    opacity: 0.92;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .nav-link:hover { opacity: 1; }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -2px;
+    height: 1.2px; width: 0;
+    background: currentColor;
+    transition: width 0.3s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+  /* nav-link text keeps its cream color on the aqua nav (no override needed) */
+
+  .nav-link.cta { font-weight: 700; letter-spacing: 0.24em; }
+
+  @media (max-width: 880px) {
+    nav.topnav,
+    nav.topnav.scrolled {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px 14px;
+      padding: 10px 14px;
+    }
+    .nav-left, .nav-right { display: contents; }
+    .brand {
+      position: static;
+      top: auto;
+      left: auto;
+      transform: none !important;
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+      order: 1;
+      font-size: 13px;
+    }
+    .brand img { height: clamp(24px, 5vw, 34px) !important; }
+    .nav-link { font-size: 10px; letter-spacing: 0.14em; }
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 520px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-image {
+    position: absolute;
+    inset: 0;
+    background:
+      url('images/HomePage.jpg') center / cover no-repeat,
+      linear-gradient(135deg, #8a7e64 0%, #5a5345 100%);
+  }
+  .hero-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.50) 85%),
+      linear-gradient(to bottom, rgba(0,0,0,0.20), rgba(0,0,0,0.45));
+  }
+  .hero-placeholder-tag {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px;
+    color: rgba(244,241,230,0.28);
+    letter-spacing: 0.32em;
+    z-index: 1;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.92;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    transition: opacity 0.3s ease;
+  }
+  .scroll-cue:hover { opacity: 1; }
+  .scroll-cue .cue-text {
+    font-size: 10.5px;
+    letter-spacing: 0.35em;
+    padding-left: 0.35em;
+  }
+  .scroll-cue .arrow {
+    display: block;
+    width: 22px;
+    height: 11px;
+    animation: scrollBounce 2s ease-in-out infinite;
+  }
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateY(0);  opacity: 0.65; }
+    50%      { transform: translateY(5px); opacity: 1;    }
+  }
+
+  /* ============================================================
+     IMAGE PLACEHOLDERS — soft, mostly empty
+     ============================================================ */
+  .img {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(0,0,0,0.07) 0 14px,
+        rgba(0,0,0,0.02) 14px 28px);
+  }
+  .img.tan-bg     { background:
+      repeating-linear-gradient(45deg,
+        rgba(118,110,92,0.18) 0 14px,
+        rgba(118,110,92,0.06) 14px 28px),
+      var(--tan-light); }
+  .img.aqua-bg    { background:
+      repeating-linear-gradient(45deg,
+        rgba(244,241,230,0.18) 0 14px,
+        rgba(244,241,230,0.05) 14px 28px),
+      var(--aqua-deep); }
+  .img.brown-bg   { background:
+      repeating-linear-gradient(45deg,
+        rgba(244,241,230,0.16) 0 14px,
+        rgba(244,241,230,0.04) 14px 28px),
+      #5e5749; }
+  .img .ph {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    opacity: 0.4;
+  }
+  .img.aqua-bg .ph,
+  .img.brown-bg .ph { color: var(--cream); }
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  h2.headline {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(40px, 7vw, 96px);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+  }
+  h2.headline .alt {
+    font-weight: 400;
+    color: var(--brown);
+  }
+  .lede {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.75;
+    font-weight: 400;
+    max-width: 38ch;
+    letter-spacing: 0.06em;
+  }
+  .kicker {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.38em;
+    opacity: 0.75;
+  }
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 40px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-decoration: none;
+    color: inherit;
+    padding: 12px 26px;
+    border: 1.8px solid currentColor;
+    border-radius: 999px;
+    transition: gap 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
+  }
+  .link:hover { gap: 22px; transform: translateY(-2px); }
+  .link .arr { font-weight: 400; font-size: 14px; }
+
+  /* Per-section accent so the button pops against each section background */
+  .sec-order .link             { color: var(--ink);   border-color: var(--brown); }
+  .sec-order .link:hover       { background: var(--brown); color: var(--cream); border-color: var(--brown); }
+  .sec-catering .link          { color: var(--cream); border-color: var(--tan); }
+  .sec-catering .link:hover    { background: var(--tan); color: var(--ink); border-color: var(--tan); }
+  .sec-who .link               { color: var(--cream); border-color: var(--tan); }
+  .sec-who .link:hover         { background: var(--tan); color: var(--ink); border-color: var(--tan); }
+  .sec-careers .link           { color: var(--cream); border-color: var(--tan); }
+  .sec-careers .link:hover     { background: var(--tan); color: var(--ink); border-color: var(--tan); }
+
+  /* ============================================================
+     SECTION SHELL — generous edge padding, large gaps
+     ============================================================ */
+  section.block {
+    padding: clamp(50px, 7vh, 80px) clamp(36px, 6vw, 96px);
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(28px, 5vw, 80px);
+    align-items: center;
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+  .grid-2 > .text-col { max-width: 520px; }
+  .grid-2 .kicker { margin-bottom: 32px; }
+  .grid-2 h2 { margin-bottom: 32px; font-size: clamp(40px, 5.6vw, 92px); }
+
+  /* ============================================================
+     01 — ORDER ONLINE (TAN)
+     ============================================================ */
+  .sec-order {
+    background: var(--tan);
+    color: var(--ink);
+    padding-left: clamp(20px, 3.5vw, 56px);
+    padding-right: clamp(20px, 3.5vw, 56px);
+  }
+  .sec-order .grid-2 {
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(24px, 4vw, 56px);
+    max-width: 1600px;
+  }
+  .sec-order .img {
+    aspect-ratio: 5 / 4;
+    border-radius: 24px;
+    overflow: hidden;
+    background-image: url('images/order%20image.avif');
+    background-size: cover;
+    background-position: center;
+  }
+  .sec-order .img .ph { display: none; }
+
+  /* ============================================================
+     02 — CATERING (AQUA — full-bleed image with overlay text)
+     ============================================================ */
+  .sec-catering {
+    background: var(--aqua);
+    color: var(--cream);
+    position: relative;
+    min-height: 100vh;
+    padding: 0;
+    overflow: hidden;
+  }
+  .sec-catering .cat-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('images/catering.avif');
+    background-size: cover;
+    background-position: center;
+    background-color: var(--aqua-deep);
+  }
+  .sec-catering .cat-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right,
+        rgba(82,126,147,0.55) 0%,
+        rgba(82,126,147,0.25) 45%,
+        rgba(82,126,147,0.65) 100%),
+      linear-gradient(to bottom,
+        rgba(0,0,0,0.05) 0%,
+        rgba(0,0,0,0.35) 100%);
+  }
+  .sec-catering .cat-content {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    padding: clamp(50px, 7vh, 80px) clamp(36px, 6vw, 96px) clamp(35px, 5vh, 60px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: clamp(40px, 6vw, 80px);
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+  .sec-catering .cat-kicker {
+    grid-column: 1 / 2;
+    grid-row: 1;
+    color: var(--cream);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.38em;
+  }
+  .sec-catering .cat-meta {
+    grid-column: 2 / 3;
+    grid-row: 1;
+    text-align: right;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    opacity: 0.45;
+  }
+  .sec-catering .cat-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-self: end;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(48px, 9vw, 140px);
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+    color: var(--cream);
+  }
+  .sec-catering .cat-title .alt { font-weight: 400; color: var(--tan); }
+  .sec-catering .cat-body {
+    grid-column: 1 / 2;
+    grid-row: 3;
+    align-self: end;
+  }
+  .sec-catering .cat-body .lede { color: var(--cream); }
+  .sec-catering .cat-aside {
+    grid-column: 2 / 3;
+    grid-row: 3;
+    align-self: end;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 24px;
+  }
+  .sec-catering .cat-aside .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .sec-catering .cat-aside .cater-label {
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    font-weight: 600;
+    color: var(--cream);
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+  .sec-catering .cat-aside .pill {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(244,241,230,0.7);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    color: var(--cream);
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  }
+  .sec-catering .cat-aside .pill:hover {
+    background: var(--cream);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+  @media (max-width: 900px) {
+    .sec-catering .cat-content {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto auto;
+    }
+    .sec-catering .cat-kicker,
+    .sec-catering .cat-meta,
+    .sec-catering .cat-title,
+    .sec-catering .cat-body,
+    .sec-catering .cat-aside {
+      grid-column: 1; text-align: left; align-items: flex-start;
+    }
+    .sec-catering .cat-aside { align-items: flex-start; }
+    .sec-catering .cat-aside .pill-row { justify-content: flex-start; }
+  }
+
+  /* ============================================================
+     03A — MENUS PIE (four kitchens, click a slice to radiate dishes)
+     ============================================================ */
+  .sec-menus-pie {
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .menus-pie-content {
+    padding: clamp(40px, 6vh, 70px) clamp(36px, 6vw, 96px);
+    flex: 1;
+    max-width: 1480px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(28px, 4vw, 80px);
+    align-items: center;
+  }
+  .menus-head .menu-lede {
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 460px;
+    margin-top: 20px;
+  }
+
+  .cuisine-pie {
+    --pie-size: clamp(290px, 34vw, 470px);
+    position: relative;
+    width: var(--pie-size);
+    height: var(--pie-size);
+    margin: 0 auto;
+  }
+  .pie-slice {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.45s cubic-bezier(.22,1,.36,1);
+    background-color: var(--dark-brown);
+    /* Layer 0 = dark gradient overlay (full slice). Layer 1 = photo (zoomed
+       enough for background-position to crop, but not so much that the photo
+       feels squeezed). */
+    background-size: 100% 100%, 140% 140%;
+    background-repeat: no-repeat, no-repeat;
+    z-index: 1;
+  }
+  .pie-slice.ps-sushi {
+    clip-path: polygon(50% 50%, 100% 50%, 100% 0%, 50% 0%);   /* top-right */
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('images/menu/sushi.jpg');
+    background-size: 100% 100%, 110% 110%;    /* sushi: gentler zoom */
+    background-position: center, 0% 100%;     /* sushi: bottom-left crop */
+  }
+  .pie-slice.ps-bowls {
+    clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%); /* bottom-right */
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('images/menu/bowls.jpg');
+    background-size: 100% 100%, 110% 110%;    /* bowls: gentler zoom */
+    background-position: center, 0% 0%;       /* bowls: top-left crop */
+  }
+  .pie-slice.ps-pasta {
+    clip-path: polygon(50% 50%, 0% 50%, 0% 100%, 50% 100%);    /* bottom-left */
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('images/menu/pasta.jpg');
+    background-position: center, 115% 115%;   /* pasta: pushed past bottom-right */
+  }
+  .pie-slice.ps-pizza {
+    clip-path: polygon(50% 50%, 0% 50%, 0% 0%, 50% 0%);        /* top-left */
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('images/menu/pizza.jpg');
+    background-position: center, center;      /* pizza: center crop (unchanged) */
+  }
+
+  /* Hover — slide each slice outward along its own diagonal */
+  .pie-slice.ps-sushi:hover { transform: translate(8%, -8%); }
+  .pie-slice.ps-bowls:hover { transform: translate(8%,  8%); }
+  .pie-slice.ps-pasta:hover { transform: translate(-8%, 8%); }
+  .pie-slice.ps-pizza:hover { transform: translate(-8%, -8%); }
+
+  /* Labels sit inside each slice's quadrant; they move with the slice on hover */
+  .slice-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(13px, 1.4vw, 18px);
+    letter-spacing: 0.22em;
+    color: var(--cream);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .ps-sushi .slice-label { top: 25%; left: 75%; }
+  .ps-bowls .slice-label { top: 75%; left: 75%; }
+  .ps-pasta .slice-label { top: 75%; left: 25%; }
+  .ps-pizza .slice-label { top: 25%; left: 25%; }
+
+  /* ============================================================
+     03B — MENUS SELECT (square buttons + rounded specials box)
+     ============================================================ */
+  .sec-menus-select {
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(42,38,32,0.08);
+  }
+  .menus-select-content {
+    padding: clamp(36px, 5vh, 60px) clamp(36px, 6vw, 96px);
+    flex: 1;
+    max-width: 1480px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) 1.3fr;
+    gap: clamp(28px, 4vw, 72px);
+    align-items: center;
+  }
+  .menus-select-head h2 { font-size: clamp(36px, 5vw, 72px); line-height: 0.95; }
+  .menus-select-head h2 .alt { color: var(--brown); }
+
+  .menus-select-right {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(18px, 2.4vw, 28px);
+  }
+  .menus-select-right .menu-specials {
+    align-self: center;
+    width: clamp(320px, 70%, 580px);
+  }
+
+  /* Buttons — 1x4 row of squares, sized to fill the right column */
+  .menu-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .menu-button {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: flex-end;
+    padding: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    background-size: cover;
+    background-position: center;
+    border-radius: 14px;
+    transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+  }
+  .menu-button:hover { transform: translateY(-4px); }
+  .menu-button::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0.1));
+    z-index: 1;
+  }
+  .menu-button .mb-label {
+    position: relative; z-index: 2;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(13px, 1.4vw, 18px);
+    letter-spacing: 0.2em;
+    color: var(--cream);
+  }
+  .menu-button .mb-tag {
+    position: absolute; top: 8px; right: 10px; z-index: 2;
+    font-family: ui-monospace, monospace;
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    color: rgba(255,255,255,0.55);
+  }
+  .menu-button.mb-dinner { background-color: var(--dark-brown); background-image: url('images/menu/dinner.avif'); }
+  .menu-button.mb-lunch  { background-color: var(--aqua);       background-image: url('images/menu/lunch.avif'); }
+  .menu-button.mb-brunch { background-color: var(--brown);      background-image: url('images/menu/brunch.avif'); }
+  .menu-button.mb-drinks { background-color: var(--aqua-deep);  background-image: url('images/menu/drinks%26specials.avif'); }
+  .menu-button .mb-tag { display: none; }
+
+  /* Specials box */
+  .menu-specials {
+    background: var(--tan-light);
+    color: var(--ink);
+    padding: clamp(20px, 2.4vh, 32px) clamp(22px, 2vw, 32px);
+    border-radius: 18px;
+    align-self: start;
+  }
+  .menu-specials .kicker { margin-bottom: 12px; }
+  .specials-title {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(20px, 2.2vw, 30px);
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+    line-height: 1.05;
+  }
+  .specials-list { list-style: none; }
+  .specials-list li {
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: 4px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(42,38,32,0.18);
+  }
+  .specials-list li:last-child { border-bottom: 1px solid rgba(42,38,32,0.18); }
+  .specials-list .sp-name {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+  }
+  .specials-list .sp-desc {
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    opacity: 0.92;
+  }
+  .specials-list .sp-meta {
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 900px) {
+    .menus-pie-content { grid-template-columns: 1fr; gap: 32px; }
+    .menus-select-content { grid-template-columns: 1fr; gap: 28px; align-items: start; }
+    .menu-buttons { grid-template-columns: 1fr 1fr; }
+    .menu-button .mb-tag { display: none; }
+    .cuisine-pie { --pie-size: clamp(220px, 60vw, 320px); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .sec-catering .grid-2 { direction: ltr; }
+  }
+
+  /* ============================================================
+     04 — OUR STORY (TAN-LIGHT PAPER, scrapbook layout)
+     ============================================================ */
+  .sec-who {
+    background: var(--tan-light);
+    color: var(--ink);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    display: block;
+  }
+  .sec-who .scrapbook {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: clamp(50px, 7vh, 90px) clamp(36px, 6vw, 96px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(36px, 5vw, 72px);
+    align-items: center;
+    min-height: 100vh;
+  }
+  .sec-who .who-text { position: relative; z-index: 2; max-width: 540px; }
+  .sec-who .kicker { margin-bottom: 22px; }
+  .sec-who h2 { margin-bottom: 24px; font-size: clamp(34px, 5vw, 72px); line-height: 0.98; }
+  .sec-who h2 .alt { color: var(--brown); }
+  .sec-who .lede { color: var(--ink); margin-bottom: 22px; }
+  .sec-who .signoff {
+    display: inline-block;
+    font-family: 'Caveat', cursive;
+    font-size: clamp(24px, 2.8vw, 36px);
+    color: var(--brown);
+    margin-top: 6px;
+    transform: rotate(-2deg);
+    line-height: 1;
+  }
+  .sec-who .scrap-items {
+    position: relative;
+    min-height: clamp(560px, 72vh, 720px);
+  }
+
+  /* Ticket stub — tucked under the bottom-right of the polaroid, in front (higher z-index) */
+  .scrap-ticket {
+    position: absolute;
+    bottom: 4%;
+    right: 2%;
+    width: clamp(210px, 23vw, 290px);
+    background: var(--tan);
+    padding: 22px 22px 20px;
+    transform: rotate(6deg);
+    box-shadow: 0 14px 32px rgba(42,38,32,0.28);
+    border: 1px dashed rgba(42,38,32,0.3);
+    z-index: 4;
+  }
+  .scrap-ticket .ticket-title {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.26em;
+    color: var(--dark-brown);
+    margin-bottom: 10px;
+  }
+  .scrap-ticket .ticket-body {
+    font-family: 'Caveat', cursive;
+    font-size: 34px;
+    line-height: 0.95;
+    color: var(--ink);
+  }
+  .scrap-ticket .ticket-meta {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--dark-brown);
+    opacity: 0.75;
+    margin-top: 12px;
+  }
+
+  /* Polaroid — large, centered-ish, tilted counter-clockwise, with a tape strip */
+  .scrap-photo {
+    position: absolute;
+    top: 6%; left: 0%;
+    width: clamp(340px, 42vw, 540px);
+    background: #ffffff;
+    padding: 20px;
+    transform: rotate(-4deg);
+    box-shadow: 0 26px 60px rgba(42,38,32,0.30);
+    z-index: 3;
+  }
+  .scrap-photo::before {
+    content: '';
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 80px; height: 22px;
+    background: rgba(205,204,167,0.75);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+  .scrap-photo .photo-inner {
+    aspect-ratio: 5/4;
+    background-color: #d6d2b8;
+    background-size: cover;
+    background-position: center;
+  }
+  .scrap-photo .caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 12px;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: var(--ink);
+  }
+
+  /* Recipe card — bottom right, lined paper */
+  .scrap-recipe {
+    position: absolute;
+    bottom: 4%; right: 0;
+    width: clamp(180px, 21vw, 250px);
+    background:
+      repeating-linear-gradient(
+        transparent 0, transparent 23px,
+        rgba(118,110,92,0.18) 23px, rgba(118,110,92,0.18) 24px
+      ),
+      #ffffff;
+    background-position: 0 24px;
+    padding: 14px 18px 18px;
+    transform: rotate(-3deg);
+    box-shadow: 0 14px 32px rgba(42,38,32,0.20);
+    border-top: 22px solid var(--tan);
+    z-index: 2;
+  }
+  .scrap-recipe .recipe-title {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .scrap-recipe .recipe-list {
+    list-style: none;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--ink);
+  }
+  .scrap-recipe .recipe-list li {
+    padding-left: 12px;
+    position: relative;
+  }
+  .scrap-recipe .recipe-list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--brown);
+  }
+
+  @media (max-width: 900px) {
+    .sec-who .scrapbook { grid-template-columns: 1fr; gap: 28px; min-height: 0; }
+    .sec-who .scrap-items { min-height: 320px; max-width: 320px; margin: 0 auto; }
+    .scrap-ticket { bottom: auto; top: auto; right: 0; left: 50%; transform: translateX(-50%) rotate(6deg); margin-top: -30px; position: relative; }
+    .scrap-photo { left: 0; top: 0; position: relative; margin: 0 auto; }
+    .scrap-recipe { display: none; }
+  }
+
+  /* ============================================================
+     MARQUEE TICKER
+     ============================================================ */
+  .marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--dark-brown);
+    color: var(--cream);
+    padding: 22px 0;
+  }
+  .marquee-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 56px;
+    padding-left: 56px;
+    animation: marquee 26s linear infinite;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: clamp(18px, 2.6vw, 30px);
+    letter-spacing: 0.04em;
+  }
+  .marquee-inner .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--tan);
+    align-self: center;
+    flex: 0 0 8px;
+  }
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ============================================================
+     05 — SOCIALS (full-bleed, 3 visible)
+     ============================================================ */
+  .sec-socials {
+    /* Cream top half blends with menus-select above; tan-light bottom half blends
+       with our-story below. Hard transition is at section's vertical midpoint,
+       which is exactly where the polaroid band is centered (align-items: center),
+       so the cream→tan-light seam is always hidden behind the polaroids. */
+    background: linear-gradient(to bottom,
+      var(--cream) 0%,
+      var(--cream) 50%,
+      var(--tan-light) 50%,
+      var(--tan-light) 100%);
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    height: auto;
+    min-height: 584px;
+    display: flex;
+    align-items: center;
+    margin-top: clamp(30px, 4vh, 70px);
+    margin-bottom: 0;
+    z-index: 5;
+  }
+  /* Auto-scrolling polaroid banner — polaroids overlap each other via negative margin */
+  .socials-marquee {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: socialsScroll 60s linear infinite;
+    animation-delay: 0s;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .ig-polaroid {
+    flex: 0 0 auto;
+    display: inline-flex;
+    background: #ffffff;
+    padding: 14px;
+    box-shadow: 0 22px 50px rgba(42,38,32,0.30);
+    position: relative;
+    margin-left: clamp(-30px, -2vw, -15px);
+    font-size: 0;
+    line-height: 0;
+  }
+  .socials-marquee > .ig-polaroid:first-child { margin-left: 0; }
+  .ig-polaroid .ig-photo {
+    display: block;
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(118,110,92,0.20) 0 14px,
+        rgba(118,110,92,0.05) 14px 28px),
+      #d6d2b8;
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Per-polaroid tilt + size variations — :nth-child(9n+X) so the duplicate set matches the originals */
+  .socials-marquee > .ig-polaroid:nth-child(9n+1) { transform: rotate(-4deg); }
+  .socials-marquee > .ig-polaroid:nth-child(9n+1) .ig-photo { width: 320px; height: 320px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+2) { transform: rotate(3deg); z-index: 2; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+2) .ig-photo { width: 280px; height: 280px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+3) { transform: rotate(-2deg); }
+  .socials-marquee > .ig-polaroid:nth-child(9n+3) .ig-photo { width: 380px; height: 380px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+4) { transform: rotate(5deg); z-index: 2; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+4) .ig-photo { width: 310px; height: 310px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+5) { transform: rotate(-6deg); }
+  .socials-marquee > .ig-polaroid:nth-child(9n+5) .ig-photo { width: 290px; height: 290px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+6) { transform: rotate(2deg); z-index: 2; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+6) .ig-photo { width: 360px; height: 360px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+7) { transform: rotate(-3deg); }
+  .socials-marquee > .ig-polaroid:nth-child(9n+7) .ig-photo { width: 330px; height: 330px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+8) { transform: rotate(6deg); z-index: 2; }
+  .socials-marquee > .ig-polaroid:nth-child(9n+8) .ig-photo { width: 300px; height: 300px; }
+  .socials-marquee > .ig-polaroid:nth-child(9n)   { transform: rotate(-1deg); }
+  .socials-marquee > .ig-polaroid:nth-child(9n)   .ig-photo { width: 350px; height: 350px; }
+
+  @keyframes socialsScroll {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+
+  /* @handle button anchored top-right of the section (sits over rightmost visible card) */
+  .socials-handle {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    z-index: 6;
+    background: #ffffff;
+    color: var(--ink);
+    border: none;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 32px rgba(42,38,32,0.25);
+    transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  }
+  .socials-handle:hover {
+    background: var(--dark-brown);
+    color: var(--cream);
+    transform: translateY(-2px);
+  }
+  .socials-handle .ig-mark {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 1.6px solid currentColor;
+    border-radius: 4px;
+    position: relative;
+  }
+  .socials-handle .ig-mark::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px; height: 6px;
+    border: 1.6px solid currentColor;
+    border-radius: 50%;
+  }
+  .socials-handle .ig-mark::after {
+    content: '';
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 2px; height: 2px;
+    background: currentColor;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 900px) {
+    .ig-polaroid .ig-photo,
+    .socials-marquee > .ig-polaroid .ig-photo { width: 220px !important; height: 220px !important; }
+    .ig-polaroid { margin-left: -15px !important; }
+    .socials-marquee > .ig-polaroid:first-child { margin-left: 0 !important; }
+    .socials-marquee { animation-duration: 50s; }
+    .sec-socials { margin-top: -50px; margin-bottom: -50px; min-height: 300px; }
+  }
+
+  /* ============================================================
+     CAREERS (BROWN)
+     ============================================================ */
+  .sec-careers {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .sec-careers .careers-img {
+    position: relative;
+    min-height: 360px;
+    background-image: url('images/careers.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #9a8060;
+  }
+  .sec-careers .careers-img .ph { display: none; }
+  .sec-careers .careers-img .ph {
+    position: absolute;
+    bottom: 20px; left: 20px;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    opacity: 0.45;
+  }
+  .sec-careers .careers-text {
+    padding: clamp(45px, 7vh, 75px) clamp(40px, 6vw, 96px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 640px;
+  }
+  .sec-careers .kicker { margin-bottom: 28px; color: var(--cream); opacity: 0.85; }
+  .sec-careers h2 { margin-bottom: 32px; font-size: clamp(34px, 5vw, 72px); }
+  .sec-careers h2 .alt { color: var(--tan); }
+  .sec-careers .lede { color: var(--cream); margin-bottom: 14px; }
+
+  .perks {
+    list-style: none;
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid rgba(244,241,230,0.35);
+  }
+  .perks li {
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(244,241,230,0.35);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .perks li:nth-child(odd) { padding-right: 16px; border-right: 1px solid rgba(244,241,230,0.35); padding-left: 0; }
+  .perks li:nth-child(even) { padding-left: 24px; }
+  .perks li .pn {
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    opacity: 0.6;
+    letter-spacing: 0.18em;
+    font-weight: 500;
+  }
+  .sec-careers .link { margin-top: 40px; align-self: flex-start; }
+
+  @media (max-width: 900px) {
+    .sec-careers { grid-template-columns: 1fr; min-height: 0; }
+    .sec-careers .careers-img { min-height: 360px; }
+    .perks { grid-template-columns: 1fr; }
+    .perks li:nth-child(odd) { border-right: none; padding-right: 0; }
+    .perks li:nth-child(even) { padding-left: 0; }
+  }
+
+  /* ============================================================
+     06 — LOCATION (DEEP AQUA — editorial photo + map + hours)
+     ============================================================ */
+  .sec-location {
+    background: var(--aqua-deep);
+    color: var(--cream);
+    padding: 0;
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  .loc-top {
+    display: grid;
+    grid-template-columns: 1.15fr 0.95fr;
+    gap: 0;
+    min-height: 100vh;
+  }
+  .loc-photo {
+    position: relative;
+    min-height: 340px;
+    background-image: url('images/location/restaurant.avif');
+    background-size: cover;
+    background-position: center;
+    background-color: #486f82;
+  }
+  .loc-photo > .ph { display: none; }
+  .loc-photo .ph {
+    position: absolute;
+    bottom: 20px; left: 20px;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    opacity: 0.42;
+  }
+  .loc-photo .corner-tl {
+    position: absolute;
+    top: 28px; left: 28px;
+    color: var(--cream);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+  }
+  .loc-info {
+    padding: clamp(30px, 5vh, 55px) clamp(40px, 6vw, 96px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .loc-info .kicker { margin-bottom: 16px; }
+  .loc-info h2 { margin-bottom: 22px; font-size: clamp(30px, 4.4vw, 72px); line-height: 0.95; }
+  .loc-info h2 .alt { color: var(--tan); }
+  .loc-info .addr {
+    font-size: 16px;
+    line-height: 1.75;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .loc-info .addr .phone {
+    display: inline-block;
+    margin-top: 14px;
+    white-space: nowrap;
+    padding: 10px 18px;
+    border: 1px solid var(--tan);
+    border-radius: 999px;
+    color: var(--tan);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .loc-info .addr .phone:hover { background: var(--tan); color: var(--ink); }
+
+  .hours-list {
+    list-style: none;
+    margin-top: 22px;
+    border-top: 1px solid rgba(244,241,230,0.3);
+  }
+  .hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(244,241,230,0.3);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+  }
+  .hours-list li .day { display: flex; align-items: center; gap: 12px; }
+  .hours-list li.today .day::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--tan);
+    box-shadow: 0 0 0 3px rgba(205,204,167,0.3);
+  }
+  .hours-list li.today { color: var(--tan); }
+  .hours-list li span:last-child { opacity: 0.92; font-weight: 500; }
+  .hours-list li .brunch {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    opacity: 0.72;
+    margin-left: 4px;
+  }
+
+  /* Mini-map — floats over the top-right of the photo */
+  .loc-mini-map {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: clamp(200px, 24vw, 290px);
+    height: clamp(150px, 18vh, 200px);
+    border-radius: 10px;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(244,241,230,0.10) 0 1px,
+        transparent 1px 32px),
+      repeating-linear-gradient(0deg,
+        rgba(244,241,230,0.10) 0 1px,
+        transparent 1px 32px),
+      var(--aqua);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.42);
+    border: 1px solid rgba(244,241,230,0.18);
+    z-index: 3;
+  }
+  .loc-mini-map .map-pin {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--brown);
+    box-shadow: 0 0 0 5px rgba(185,157,114,0.35),
+                0 0 0 11px rgba(185,157,114,0.18);
+  }
+  .loc-mini-map .ph {
+    position: absolute;
+    bottom: 10px; left: 14px;
+    font-family: ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    color: var(--cream);
+    opacity: 0.5;
+  }
+  .loc-mini-map .directions-btn {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: var(--cream);
+    color: var(--ink);
+    padding: 9px 12px;
+    border-radius: 0;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.25s ease;
+  }
+  .loc-mini-map .directions-btn:hover { background: white; }
+
+  @media (max-width: 900px) {
+    .loc-top { grid-template-columns: 1fr; min-height: 0; }
+    .loc-photo { min-height: 300px; }
+    .loc-info { padding: 56px 28px; }
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer.foot {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 20px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    font-weight: 500;
+  }
+  footer.foot .foot-links {
+    display: flex;
+    gap: 26px;
+    list-style: none;
+  }
+  footer.foot a {
+    color: var(--cream);
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+  }
+  footer.foot a:hover { opacity: 1; }
+  footer.foot .foot-copy { opacity: 0.6; }
+
+  @media (max-width: 760px) {
+    footer.foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+    }
+  }
+
+  /* ============================================================
+     REVEAL
+     ============================================================ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ============================================================
+     SHORT-VIEWPORT TIERS — proactive shrink so each section fits
+     when laptop height drops below 820 / 720 px.
+     ============================================================ */
+  @media (max-height: 820px) {
+    .hero-title { font-size: clamp(40px, 9vw, 130px); }
+    h2.headline { font-size: clamp(32px, 5.5vw, 76px); }
+    .cat-title { font-size: clamp(40px, 7.5vw, 110px); }
+    .sec-careers h2 { font-size: clamp(28px, 4.2vw, 60px); }
+    .loc-info h2 { font-size: clamp(26px, 3.8vw, 58px); }
+    section.block { padding: clamp(36px, 5vh, 60px) clamp(36px, 6vw, 96px); }
+    .menus-content { padding: clamp(36px, 5vh, 60px) clamp(36px, 6vw, 96px) clamp(24px, 4vh, 48px); }
+    .sec-catering .cat-content { padding: clamp(36px, 5vh, 60px) clamp(36px, 6vw, 96px) clamp(28px, 4vh, 50px); }
+    .sec-who .who-text,
+    .sec-careers .careers-text,
+    .loc-info { padding: clamp(32px, 5vh, 55px) clamp(40px, 6vw, 96px); }
+    .sec-who .img,
+    .sec-careers .careers-img { min-height: 300px; }
+    .loc-photo { min-height: 280px; }
+    .hours-list li { padding: 7px 0; font-size: 11.5px; }
+  }
+
+  @media (max-height: 720px) {
+    .hero-title { font-size: clamp(36px, 8vw, 100px); }
+    h2.headline { font-size: clamp(26px, 5vw, 60px); }
+    .cat-title { font-size: clamp(34px, 6.5vw, 90px); }
+    .lede { font-size: 13.5px; line-height: 1.55; }
+    section.block { padding: clamp(24px, 4vh, 44px) clamp(36px, 6vw, 96px); }
+    .menus-content { padding: clamp(24px, 4vh, 44px) clamp(36px, 6vw, 96px) clamp(18px, 3vh, 36px); }
+    .sec-who .img,
+    .sec-careers .careers-img { min-height: 240px; }
+    .loc-photo { min-height: 240px; }
+    .menu-card { aspect-ratio: 2 / 3; }
+  }
+
+  /* ============================================================
+     MOBILE — release the 100vh-per-section constraint so content
+     flows naturally; trim a few non-essential bits to stay tight.
+     ============================================================ */
+  @media (max-width: 880px) {
+    section.block,
+    .sec-catering,
+    .sec-who,
+    .sec-socials,
+    .sec-careers,
+    .sec-location {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+    section.block { justify-content: flex-start; }
+    .sec-catering .cat-content { height: auto; }
+    /* socials marquee height handled by section's height: 50vh */
+    .loc-top { height: auto; }
+    .menu-card { max-height: none; aspect-ratio: 5 / 4; }
+    .sec-order .img { max-height: 50vh; }
+    .sec-who .lede + .lede,
+    .sec-catering .cat-aside { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     INTRO OVERLAY
+     ============================================================ -->
+<div id="intro" aria-hidden="true">
+  <div class="word-stage">
+    <div class="word" id="introWord"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     NAV — brand centered, links balanced left/right
+     ============================================================ -->
+<nav class="topnav" id="nav">
+  <div class="nav-left">
+    <a href="#menus"    class="nav-link">MENUS</a>
+    <a href="#who"      class="nav-link">OUR STORY</a>
+  </div>
+  <a href="#top" class="brand"><img src="images/TitleLogo.avif" alt="Water + Flour"></a>
+  <div class="nav-right">
+    <a href="#careers"  class="nav-link">CAREERS</a>
+    <a href="#catering" class="nav-link">CATERING</a>
+    <a href="#order"    class="nav-link cta">ORDER ONLINE</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="top">
+  <div class="hero-image"></div>
+  <a href="#order" class="scroll-cue">
+    <span class="cue-text">BROWSE</span>
+    <svg class="arrow" viewBox="0 0 24 12" fill="none" stroke="currentColor"
+         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true">
+      <polyline points="3 3 12 10 21 3"/>
+    </svg>
+  </a>
+</section>
+
+<!-- ============================================================
+     01 — ORDER ONLINE
+     ============================================================ -->
+<section class="block sec-order" id="order">
+  <div class="grid-2">
+    <div class="img tan-bg reveal">
+      <span class="ph">[ TAKEOUT · PICKUP PHOTO ]</span>
+    </div>
+    <div class="text-col reveal">
+      <div class="kicker">ORDER ONLINE</div>
+      <h2 class="headline">PICK IT UP,<br/>OR HAVE IT<br/><span class="alt">BROUGHT TO YOU.</span></h2>
+      <p class="lede">
+        Fresh sushi, hand-thrown pizza, slow-simmered pasta and
+        bright seasonal bowls — ready when you are.
+      </p>
+      <a href="#" class="link">START AN ORDER <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     02 — CATERING (full-bleed editorial)
+     ============================================================ -->
+<section class="sec-catering" id="catering">
+  <div class="cat-bg"></div>
+  <div class="cat-content">
+    <div class="cat-kicker reveal">CATERING · 02</div>
+    <div class="cat-meta"></div>
+    <h2 class="cat-title reveal">FEED THE ROOM.<br/><span class="alt">KEEP IT EASY.</span></h2>
+    <div class="cat-body reveal">
+      <p class="lede">
+        Office lunches, rehearsal dinners, backyard parties — shareable
+        spreads built from every corner of the menu, delivered ready to serve.
+      </p>
+      <a href="#" class="link">PLAN AN EVENT <span class="arr">→</span></a>
+    </div>
+    <div class="cat-aside reveal">
+      <div class="cater-label">CATER WITH US · CONTACT</div>
+      <div class="pill-row">
+        <a class="pill" href="tel:8138450115">(813) 845 · 0115</a>
+        <a class="pill" href="mailto:catering@waterandfloursoho.com">CATERING@WATERANDFLOURSOHO.COM</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MARQUEE — bridges Catering (aqua) → Menus (cream)
+     ============================================================ -->
+<div class="marquee">
+  <div class="marquee-inner">
+    <span>SUSHI</span><span class="dot"></span>
+    <span>BOWLS</span><span class="dot"></span>
+    <span>PASTA</span><span class="dot"></span>
+    <span>PIZZA</span><span class="dot"></span>
+    <span>SUSHI</span><span class="dot"></span>
+    <span>BOWLS</span><span class="dot"></span>
+    <span>PASTA</span><span class="dot"></span>
+    <span>PIZZA</span><span class="dot"></span>
+    <span>SUSHI</span><span class="dot"></span>
+    <span>BOWLS</span><span class="dot"></span>
+    <span>PASTA</span><span class="dot"></span>
+    <span>PIZZA</span><span class="dot"></span>
+  </div>
+</div>
+
+<!-- ============================================================
+     03A — MENUS / FOUR KITCHENS (pie)
+     ============================================================ -->
+<section class="sec-menus-pie" id="menus">
+  <div class="menus-pie-content">
+    <div class="menus-head reveal">
+      <h2 class="headline">A LITTLE<br/><span class="alt">OF EVERYTHING</span><br/>YOU LOVE.</h2>
+      <p class="menu-lede">
+        OUR MENU IS STITCHED TOGETHER FROM FOUR TRADITIONS WE LOVE. PICK A KITCHEN AND DIVE IN.
+      </p>
+    </div>
+    <div class="cuisine-pie reveal" id="cuisinePie">
+      <a href="#" class="pie-slice ps-sushi" data-cuisine="sushi" aria-label="Sushi"><span class="slice-label">SUSHI</span></a>
+      <a href="#" class="pie-slice ps-bowls" data-cuisine="bowls" aria-label="Bowls"><span class="slice-label">BOWLS</span></a>
+      <a href="#" class="pie-slice ps-pasta" data-cuisine="pasta" aria-label="Pasta"><span class="slice-label">PASTA</span></a>
+      <a href="#" class="pie-slice ps-pizza" data-cuisine="pizza" aria-label="Pizza"><span class="slice-label">PIZZA</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     03B — MENUS / SELECT A MENU (buttons + specials)
+     ============================================================ -->
+<section class="sec-menus-select" id="menus-select">
+  <div class="menus-select-content">
+    <div class="menus-select-head reveal">
+      <h2 class="headline">SELECT<br/><span class="alt">A MENU.</span></h2>
+    </div>
+    <div class="menus-select-right reveal">
+      <div class="menu-buttons">
+        <a href="#" class="menu-button mb-dinner">
+          <span class="mb-label">DINNER</span>
+          <span class="mb-tag">[ DINNER IMAGE ]</span>
+        </a>
+        <a href="#" class="menu-button mb-lunch">
+          <span class="mb-label">LUNCH</span>
+          <span class="mb-tag">[ LUNCH IMAGE ]</span>
+        </a>
+        <a href="#" class="menu-button mb-brunch">
+          <span class="mb-label">BRUNCH</span>
+          <span class="mb-tag">[ BRUNCH IMAGE ]</span>
+        </a>
+        <a href="#" class="menu-button mb-drinks">
+          <span class="mb-label">DRINKS &amp; SPECIALS</span>
+          <span class="mb-tag">[ DRINKS IMAGE ]</span>
+        </a>
+      </div>
+      <div class="menu-specials">
+        <div class="kicker">EVERY WEEK</div>
+        <h3 class="specials-title">WEEKLY SPECIALS</h3>
+        <ul class="specials-list">
+          <li>
+            <span class="sp-name">TACO TUESDAY</span>
+            <span class="sp-desc">$3 TACOS &amp; DRINK SPECIALS</span>
+            <span class="sp-meta">3PM — CLOSE · DINE IN ONLY</span>
+          </li>
+          <li>
+            <span class="sp-name">WATER WEDNESDAY</span>
+            <span class="sp-desc">$6 SUSHI ROLLS &amp; DRINK SPECIALS</span>
+            <span class="sp-meta">3PM — CLOSE · DINE IN ONLY</span>
+          </li>
+          <li>
+            <span class="sp-name">WEEKEND BRUNCH</span>
+            <span class="sp-desc">SATURDAY &amp; SUNDAY</span>
+            <span class="sp-meta">SERVED UNTIL 3PM · DINE IN ONLY</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     04 — SOCIALS
+     ============================================================ -->
+<section class="sec-socials" id="socials">
+  <div class="socials-marquee">
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/ig1.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/cake.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/sushiplate.avif');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/ig2.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/catering2.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/pizzawine.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/ig3.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/restaurant2.jpg');"></div></div>
+    <div class="ig-polaroid"><div class="ig-photo" style="background-image: url('images/ig/ig4.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/ig1.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/cake.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/sushiplate.avif');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/ig2.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/catering2.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/pizzawine.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/ig3.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/restaurant2.jpg');"></div></div>
+    <div class="ig-polaroid" aria-hidden="true"><div class="ig-photo" style="background-image: url('images/ig/ig4.jpg');"></div></div>
+  </div>
+  <a href="https://instagram.com/waterandfloursoho" target="_blank" rel="noopener" class="socials-handle">
+    <span class="ig-mark"></span>@waterandfloursoho
+  </a>
+</section>
+
+<!-- ============================================================
+     05 — OUR STORY (scrapbook)
+     ============================================================ -->
+<section class="sec-who" id="who">
+  <div class="scrapbook">
+    <div class="who-text reveal">
+      <div class="kicker">OUR STORY</div>
+      <h2 class="headline">FRESH PLATE.<br/><span class="alt">SAME FAMILY.</span></h2>
+      <p class="lede">
+        Formerly Ciccio &amp; Tony's — now Cali-Miami meets SoHo.
+        Cali bowls, fresh pasta, sourdough pizza, sushi.
+        Plant-based and gluten-free, all welcome.
+      </p>
+      <div class="signoff">~ from the family</div>
+    </div>
+    <div class="scrap-items reveal">
+      <div class="scrap-ticket">
+        <div class="ticket-title">CICCIO &amp; TONY'S</div>
+        <div class="ticket-body">EST.<br/>1996</div>
+        <div class="ticket-meta">SOHO · TAMPA</div>
+      </div>
+      <div class="scrap-photo">
+        <div class="photo-inner" style="background-image: url('images/story/ourstory.jpg');"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CAREERS
+     ============================================================ -->
+<section class="sec-careers" id="careers">
+  <div class="careers-img">
+    <span class="ph">[ TEAM · KITCHEN PHOTO ]</span>
+  </div>
+  <div class="careers-text reveal">
+    <div class="kicker">CAREERS</div>
+    <h2 class="headline">BUILD A<br/><span class="alt">CAREER.</span></h2>
+    <p class="lede">
+      Always looking for passionate people. If crafting memorable guest
+      experiences is your thing — we'd love to hear from you.
+    </p>
+    <ul class="perks">
+      <li><span class="pn">01</span>COMPETITIVE PAY</li>
+      <li><span class="pn">02</span>REAL PATH TO ADVANCEMENT</li>
+      <li><span class="pn">03</span>FREE CREW SWAG</li>
+      <li><span class="pn">04</span>FLEXIBLE SCHEDULING</li>
+    </ul>
+    <a href="#" class="link">SEE OPEN ROLES <span class="arr">→</span></a>
+  </div>
+</section>
+
+<!-- ============================================================
+     06 — LOCATION / HOURS
+     ============================================================ -->
+<section class="sec-location" id="location">
+  <div class="loc-top">
+    <div class="loc-info reveal">
+      <div class="kicker">FIND US</div>
+      <h2 class="headline">COME SIT<br/><span class="alt">WITH US.</span></h2>
+      <div class="addr">
+        1015 SOUTH HOWARD AVE<br/>
+        TAMPA, FL 33606<br/>
+        <a class="phone" href="tel:8132518406">(813) 251 · 8406</a>
+      </div>
+      <ul class="hours-list">
+        <li><span class="day">MONDAY</span><span>11A — 9P</span></li>
+        <li><span class="day">TUE — FRI</span><span>11A — 10P</span></li>
+        <li><span class="day">SATURDAY</span><span>11A — 10P <em class="brunch">· BRUNCH 11A — 3P</em></span></li>
+        <li><span class="day">SUNDAY</span><span>11A — 9P <em class="brunch">· BRUNCH 11A — 3P</em></span></li>
+      </ul>
+    </div>
+    <div class="loc-photo">
+      <span class="corner-tl">ON SOUTH HOWARD</span>
+      <span class="ph">[ RESTAURANT EXTERIOR PHOTO ]</span>
+      <div class="loc-mini-map">
+        <div class="map-pin"></div>
+        <span class="ph">[ MAP EMBED ]</span>
+        <a href="#" class="directions-btn">GET DIRECTIONS <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="foot">
+  <ul class="foot-links">
+    <li><a href="#order">ORDER</a></li>
+    <li><a href="#catering">CATERING</a></li>
+    <li><a href="#menus">MENUS</a></li>
+    <li><a href="#who">STORY</a></li>
+    <li><a href="#careers">CAREERS</a></li>
+    <li><a href="#">INSTAGRAM</a></li>
+  </ul>
+  <div class="foot-copy">© 2026 WATER + FLOUR · ALL RIGHTS RESERVED</div>
+</footer>
+
+<script>
+  /* INTRO — letters slide up randomly, hold, slide out upward randomly */
+  (function() {
+    const words = ['SUSHI', 'BOWLS', 'PASTA', 'PIZZA'];
+    const container = document.getElementById('introWord');
+    const intro = document.getElementById('intro');
+    if (intro) {
+      document.documentElement.classList.add('intro-locked');
+      document.body.classList.add('intro-locked');
+    }
+    function shuffleIndices(n) {
+      const arr = Array.from({length: n}, (_, i) => i);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+    function showWord(word) {
+      return new Promise(resolve => {
+        container.innerHTML = '';
+        const letters = word.split('').map(ch => {
+          const span = document.createElement('span');
+          span.className = 'letter';
+          span.textContent = ch;
+          container.appendChild(span);
+          return span;
+        });
+        const inOrder = shuffleIndices(letters.length);
+        const inStagger = 20;
+        inOrder.forEach((i, idx) => setTimeout(() => letters[i].classList.add('in'), idx * inStagger));
+        const lastIn = (inOrder.length - 1) * inStagger + 220;
+        const hold = 80;
+        setTimeout(() => {
+          const outOrder = shuffleIndices(letters.length);
+          const outStagger = 16;
+          outOrder.forEach((i, idx) => setTimeout(() => {
+            letters[i].classList.remove('in');
+            letters[i].classList.add('out');
+          }, idx * outStagger));
+          const lastOut = (outOrder.length - 1) * outStagger + 180;
+          setTimeout(resolve, lastOut);
+        }, lastIn + hold);
+      });
+    }
+    (async () => {
+      await new Promise(r => setTimeout(r, 280));
+      for (const w of words) await showWord(w);
+      await new Promise(r => setTimeout(r, 200));
+      intro.classList.add('done');
+      document.documentElement.classList.remove('intro-locked');
+      document.body.classList.remove('intro-locked');
+      setTimeout(() => intro.remove(), 1000);
+    })();
+  })();
+
+  /* NAV — brand is absolutely positioned over the nav so its size doesn't push the
+     nav layout around. JS uses transform: scale() (GPU-composited) for size and
+     translateY for vertical position, throttled through requestAnimationFrame so the
+     morph is paint-synced and smooth. */
+  (function navMorph() {
+    const nav = document.getElementById('nav');
+    const brand = nav && nav.querySelector('.brand');
+    const scrollCue = document.querySelector('.scroll-cue');
+    if (!nav || !brand) return;
+
+    const isDesktop = () => window.innerWidth > 880;
+
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+
+      const vh = window.innerHeight;
+      const vw = window.innerWidth;
+
+      if (!isDesktop()) {
+        brand.style.transform = '';
+        if (scrollCue) {
+          scrollCue.style.opacity = '';
+          scrollCue.style.pointerEvents = '';
+        }
+        if (window.scrollY > vh * 0.5) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+        return;
+      }
+
+      const progress = Math.min(1, Math.max(0, window.scrollY / vh));
+
+      // Linear interpolation — every pixel of scroll = proportional visual change.
+      const navHeightPx = Math.max(30, Math.min(44, vw * 0.031));   // matches CSS clamp
+      const heroScale   = Math.max(3.5, Math.min(5, vh * 0.0045));  // keeps hero size similar
+      const scale       = 1 + (1 - progress) * (heroScale - 1);
+      const displayedH  = navHeightPx * scale;
+
+      const navCenterY  = 30;
+      const heroCenterY = vh * 0.5;
+      const targetCenter = navCenterY + (1 - progress) * (heroCenterY - navCenterY);
+      const ty = targetCenter - displayedH / 2;
+
+      brand.style.transform = `translateX(-50%) translateY(${ty}px) scale(${scale})`;
+
+      if (scrollCue) {
+        // Fade BROWSE so it's invisible by 50% scroll — doesn't collide with the morphing logo.
+        const cueProgress = Math.min(1, progress * 2);
+        const cueOpacity  = Math.max(0, 0.92 * (1 - cueProgress));
+        scrollCue.style.opacity = cueOpacity.toFixed(3);
+        scrollCue.style.pointerEvents = cueProgress >= 1 ? 'none' : '';
+      }
+
+      if (progress >= 0.92) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+  })();
+
+  /* SOCIALS — auto-scroll marquee runs via CSS animation; no JS needed */
+
+  /* PIE — click handler removed; slices only respond to hover */
+  (function pieMenu() {
+    const pie = document.getElementById('cuisinePie');
+    if (!pie) return;
+    pie.querySelectorAll('.pie-slice').forEach(slice => {
+      slice.addEventListener('click', e => e.preventDefault());
+    });
+  })();
+
+  /* REVEAL on scroll */
+  (function() {
+    const els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('in')); return; }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    els.forEach(el => io.observe(el));
+  })();
+</script>
+</body>
+</html>
