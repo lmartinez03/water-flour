@@ -37,7 +37,7 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; overscroll-behavior-x: none; }
+  html { scroll-behavior: smooth; overscroll-behavior-x: none; overflow-x: hidden; }
 
   body {
     font-family: 'Quicksand', system-ui, sans-serif;
@@ -1018,7 +1018,11 @@
       var(--tan-light) 100%);
     padding: 0;
     position: relative;
-    overflow: visible;
+    /* Clip horizontally so the marquee can't push the page wide (and let the
+       user swipe sideways on mobile), but leave vertical overflow visible so
+       the polaroid band still bleeds into the neighboring sections. */
+    overflow-x: clip;
+    overflow-y: visible;
     height: auto;
     min-height: 584px;
     display: flex;
