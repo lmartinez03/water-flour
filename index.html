@@ -386,12 +386,14 @@
   /* Order Online — solid pill so it reads as the primary CTA; hover swaps to dark-brown */
   .sec-order .link             { background: var(--brown);      color: var(--cream); border-color: var(--brown); }
   .sec-order .link:hover       { background: var(--dark-brown); color: var(--cream); border-color: var(--dark-brown); }
-  .sec-catering .link          { color: var(--cream); border-color: var(--tan); }
-  .sec-catering .link:hover    { background: var(--tan); color: var(--ink); border-color: var(--tan); }
-  .sec-who .link               { color: var(--cream); border-color: var(--tan); }
-  .sec-who .link:hover         { background: var(--tan); color: var(--ink); border-color: var(--tan); }
-  .sec-careers .link           { color: var(--cream); border-color: var(--tan); }
-  .sec-careers .link:hover     { background: var(--tan); color: var(--ink); border-color: var(--tan); }
+  /* Catering, Our Story, Careers — solid tan pill that pops on warm/dark section bgs;
+     hover swaps the fill to cream (still ink text) so it reads as a brightened state */
+  .sec-catering .link          { background: var(--tan);   color: var(--ink); border-color: var(--tan); }
+  .sec-catering .link:hover    { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+  .sec-who .link               { background: var(--tan);   color: var(--ink); border-color: var(--tan); }
+  .sec-who .link:hover         { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+  .sec-careers .link           { background: var(--tan);   color: var(--ink); border-color: var(--tan); }
+  .sec-careers .link:hover     { background: var(--cream); color: var(--ink); border-color: var(--cream); }
 
   /* ============================================================
      SECTION SHELL — generous edge padding, large gaps
