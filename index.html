@@ -171,15 +171,23 @@
     cursor: pointer;
   }
   .nav-link:hover { opacity: 1; }
+  /* Hover underline: grows in from the left edge, then on mouse-out shrinks
+     away to the right edge (the trick is swapping transform-origin between
+     hover/idle so the same scaleX animation reads differently each way). */
   .nav-link::after {
     content: '';
     position: absolute;
     left: 0; bottom: -2px;
-    height: 1.2px; width: 0;
+    height: 1.2px; width: 100%;
     background: currentColor;
-    transition: width 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
   }
-  .nav-link:hover::after { width: 100%; }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
   /* nav-link text keeps its cream color on the aqua nav (no override needed) */
 
   /* Order Online in the nav — small filled pill matching the section CTA so they
