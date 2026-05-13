@@ -200,11 +200,15 @@
 
   @media (max-width: 880px) {
     /* Mobile nav: hide the link groups entirely so only the morphing Water+Flour
-       logo lives in the bar. Same scroll-morph behavior as desktop. */
+       logo lives in the bar. Same scroll-morph behavior as desktop.
+       min-height is set deliberately tall enough to fully contain the landed
+       logo so the aqua background covers it edge-to-edge (no transparent
+       sliver below). */
     nav.topnav,
     nav.topnav.scrolled {
       display: block;
       padding: 10px 14px;
+      min-height: 58px;
     }
     .nav-left, .nav-right { display: none !important; }
     /* Brand stays absolutely positioned (like desktop) so the JS scroll-morph
@@ -1897,7 +1901,7 @@
         ? Math.max(24, Math.min(34, vw * 0.05))
         : Math.max(30, Math.min(44, vw * 0.031));
       const heroScale   = isNarrow
-        ? Math.max(4, Math.min(5.5, vh * 0.006))
+        ? Math.max(3, Math.min(4, vh * 0.0042))
         : Math.max(3.5, Math.min(5, vh * 0.0045));
       const scale       = 1 + (1 - progress) * (heroScale - 1);
       const displayedH  = navHeightPx * scale;
