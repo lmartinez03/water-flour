@@ -213,7 +213,7 @@
     .nav-left, .nav-right { display: none !important; }
     /* Brand stays absolutely positioned (like desktop) so the JS scroll-morph
        can move and scale it from hero-center down to the nav slot. */
-    .brand img { height: clamp(24px, 5vw, 34px) !important; }
+    .brand img { height: clamp(36px, 8vw, 50px) !important; }
   }
 
   /* ============================================================
@@ -1902,15 +1902,15 @@
       // Mobile uses a slightly different nav-height base (smaller logo at the top of
       // the nav) and a tuned hero scale so the big logo fits comfortably on a phone.
       const navHeightPx = isNarrow
-        ? Math.max(24, Math.min(34, vw * 0.05))
+        ? Math.max(36, Math.min(50, vw * 0.08))         // matches CSS clamp on mobile
         : Math.max(30, Math.min(44, vw * 0.031));
       const heroScale   = isNarrow
-        ? Math.max(3, Math.min(4, vh * 0.0042))
+        ? Math.max(2, Math.min(2.8, vh * 0.003))        // tuned so the hero logo size stays similar
         : Math.max(3.5, Math.min(5, vh * 0.0045));
       const scale       = 1 + (1 - progress) * (heroScale - 1);
       const displayedH  = navHeightPx * scale;
 
-      const navCenterY  = isNarrow ? 26 : 30;
+      const navCenterY  = isNarrow ? 29 : 30;   /* mid-line of the 58px mobile nav */
       const heroCenterY = vh * 0.5;
       const targetCenter = navCenterY + (1 - progress) * (heroCenterY - navCenterY);
       const ty = targetCenter - displayedH / 2;
